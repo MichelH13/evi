@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uma pergunta especial 💕</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a0010 0%, #3d0030 40%, #1a0010 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Georgia', serif;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Estrelinhas de fundo */
+  .stars-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .star-dot {
+    position: absolute;
+    border-radius: 50%;
+    background: #fff;
+    opacity: 0;
+    animation: twinkle var(--d) ease-in-out infinite var(--delay);
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: var(--op); transform: scale(1); }
+  }
+
+  /* Pétalas flutuantes */
+  .petal {
+    position: fixed;
+    font-size: 1.2rem;
+    pointer-events: none;
+    z-index: 1;
+    animation: fall var(--fd) linear infinite var(--fd-delay);
+    top: -40px;
+    opacity: 0.7;
+  }
+
+  @keyframes fall {
+    0% { transform: translateY(-40px) rotate(0deg); opacity: 0.8; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* Card principal */
+  .card {
+    position: relative;
+    z-index: 10;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,150,180,0.3);
+    border-radius: 28px;
+    padding: 3rem 3.5rem;
+    text-align: center;
+    max-width: 520px;
+    width: 90vw;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 60px rgba(255,80,140,0.2), inset 0 0 30px rgba(255,100,160,0.05);
+    animation: cardPulse 4s ease-in-out infinite;
+  }
+
+  @keyframes cardPulse {
+    0%, 100% { box-shadow: 0 0 60px rgba(255,80,140,0.2), inset 0 0 30px rgba(255,100,160,0.05); }
+    50% { box-shadow: 0 0 100px rgba(255,80,140,0.35), inset 0 0 30px rgba(255,100,160,0.1); }
+  }
+
+  .emoji-top {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .name {
+    font-size: 2.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ff9ab5, #ff4d94, #ffb3cc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 2px;
+    margin-bottom: 0.4rem;
+    animation: shimmer 3s ease-in-out infinite;
+    background-size: 200% 200%;
+  }
+
+  @keyframes shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .subtitle {
+    color: rgba(255,180,210,0.8);
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    font-style: italic;
+    letter-spacing: 1px;
+  }
+
+  .question {
+    color: #fff;
+    font-size: 1.55rem;
+    line-height: 1.5;
+    margin-bottom: 2.5rem;
+    text-shadow: 0 0 20px rgba(255,100,160,0.5);
+  }
+
+  .question span {
+    color: #ff80b3;
+    font-weight: bold;
+  }
+
+  /* Botões */
+  .buttons {
+    display: flex;
+    gap: 1.2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .btn-sim {
+    background: linear-gradient(135deg, #ff4d94, #e0176e);
+    color: #fff;
+    border: none;
+    padding: 0.85rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 24px rgba(255,77,148,0.5);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .btn-sim:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 36px rgba(255,77,148,0.7);
+  }
+
+  .btn-nao {
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,200,220,0.9);
+    border: 1px solid rgba(255,150,180,0.4);
+    padding: 0.85rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: transform 0.15s;
+    position: absolute;
+  }
+
+  /* Mensagem engraçada */
+  .funny-msg {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(30,0,20,0.95);
+    border: 1px solid rgba(255,100,160,0.5);
+    border-radius: 20px;
+    padding: 2rem 2.5rem;
+    text-align: center;
+    z-index: 100;
+    max-width: 340px;
+    width: 88vw;
+    animation: popIn 0.3s cubic-bezier(.17,.67,.35,1.3);
+  }
+
+  @keyframes popIn {
+    0% { transform: translate(-50%,-50%) scale(0.5); opacity: 0; }
+    100% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+  }
+
+  .funny-msg .msg-emoji { font-size: 3rem; display: block; margin-bottom: 0.7rem; }
+  .funny-msg p { color: #fff; font-size: 1.05rem; line-height: 1.6; }
+  .funny-msg .close-btn {
+    margin-top: 1.2rem;
+    background: rgba(255,77,148,0.25);
+    border: 1px solid rgba(255,77,148,0.5);
+    color: #ffaacc;
+    padding: 0.5rem 1.5rem;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+
+  /* Corações subindo */
+  .heart-float {
+    position: fixed;
+    font-size: 2rem;
+    pointer-events: none;
+    z-index: 200;
+    animation: floatUp 2.5s ease-out forwards;
+  }
+
+  @keyframes floatUp {
+    0% { transform: translateY(0) scale(0.5) rotate(-10deg); opacity: 1; }
+    100% { transform: translateY(-85vh) scale(1.4) rotate(15deg); opacity: 0; }
+  }
+
+  /* Tela do Sim */
+  .sim-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10,0,8,0.97);
+    z-index: 300;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    animation: fadeIn 0.6s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  .sim-screen.active { display: flex; }
+
+  .sim-big-heart {
+    font-size: 6rem;
+    animation: heartbeat 1.2s ease-in-out infinite;
+  }
+
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    30% { transform: scale(1.2); }
+    60% { transform: scale(0.95); }
+  }
+
+  .sim-title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #ff80b3;
+    margin: 1rem 0 0.5rem;
+    text-shadow: 0 0 30px rgba(255,80,150,0.6);
+  }
+
+  .sim-sub {
+    color: rgba(255,190,215,0.85);
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+
+  .spotify-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    background: #1DB954;
+    color: #fff;
+    border: none;
+    padding: 0.85rem 2rem;
+    border-radius: 50px;
+    font-size: 1.05rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 24px rgba(29,185,84,0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+    animation: spotiPulse 2s ease-in-out infinite 1s;
+  }
+
+  .spotify-btn:hover {
+    transform: scale(1.07);
+    box-shadow: 0 6px 36px rgba(29,185,84,0.6);
+  }
+
+  @keyframes spotiPulse {
+    0%, 100% { box-shadow: 0 4px 24px rgba(29,185,84,0.4); }
+    50% { box-shadow: 0 4px 40px rgba(29,185,84,0.75); }
+  }
+
+  .spotify-icon {
+    width: 26px;
+    height: 26px;
+    fill: #fff;
+  }
+
+  .sim-note {
+    margin-top: 1.2rem;
+    color: rgba(255,160,200,0.6);
+    font-size: 0.85rem;
+    font-style: italic;
+  }
+
+  /* Overlay escuro quando msg engraçada aparece */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 99;
+  }
+  .overlay.active { display: block; }
+</style>
+</head>
+<body>
+
+<div class="stars-bg" id="stars"></div>
+<div id="petals"></div>
+
+<!-- Card principal -->
+<div class="card" id="mainCard">
+  <span class="emoji-top">🌹</span>
+  <div class="name">Evillyn</div>
+  <div class="subtitle">tenho algo muito importante pra te perguntar...</div>
+
+  <p class="question">
+    Você toparia me fazer a pessoa mais feliz do mundo e<br>
+    <span>namorar comigo?</span> 💕
+  </p>
+
+  <div class="buttons" id="buttonsArea">
+    <button class="btn-sim" onclick="handleSim()">💖 Sim!</button>
+    <button class="btn-nao" id="btnNao" onmouseover="fugeNao()" ontouchstart="fugeNao()">Não</button>
+  </div>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay" onclick="closeFunny()"></div>
+
+<!-- Mensagem engraçada -->
+<div class="funny-msg" id="funnyMsg">
+  <span class="msg-emoji" id="funnyEmoji">😤</span>
+  <p id="funnyText">Errou a opção! Tenta de novo 😏</p>
+  <button class="close-btn" onclick="closeFunny()">Deixa eu tentar de novo…</button>
+</div>
+
+<!-- Tela do Sim -->
+<div class="sim-screen" id="simScreen">
+  <div class="sim-big-heart">💖</div>
+  <div class="sim-title">Ela disse SIM! 🎉</div>
+  <div class="sim-sub">Você acabou de fazer meu coração disparar, Evillyn ❤️</div>
+
+  <a class="spotify-btn"
+     href="https://open.spotify.com/track/2s0BKz3MuOGn7C5RV7gVUZ"
+     target="_blank"
+     id="spotifyLink">
+    <svg class="spotify-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.496 17.307a.748.748 0 01-1.031.249c-2.824-1.725-6.376-2.115-10.563-1.158a.748.748 0 01-.333-1.459c4.579-1.046 8.507-.596 11.678 1.337a.748.748 0 01.249 1.031zm1.468-3.262a.937.937 0 01-1.288.308c-3.232-1.987-8.158-2.563-11.981-1.403a.937.937 0 01-.543-1.793c4.371-1.326 9.8-.683 13.504 1.6a.937.937 0 01.308 1.288zm.126-3.398c-3.877-2.302-10.27-2.514-13.971-1.391a1.124 1.124 0 01-.651-2.149c4.248-1.288 11.306-1.04 15.77 1.609a1.124 1.124 0 01-1.148 1.931z"/>
+    </svg>
+    🎵 Ouvir "Te Assumir" no Spotify
+  </a>
+
+  <p class="sim-note">Matheus & Kauan — a nossa música agora 🥺</p>
+</div>
+
+<script>
+  // ---- Estrelas de fundo ----
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div');
+    s.className = 'star-dot';
+    const size = Math.random() * 3 + 1;
+    s.style.cssText = `
+      width:${size}px; height:${size}px;
+      top:${Math.random()*100}%; left:${Math.random()*100}%;
+      --d:${(Math.random()*3+2).toFixed(1)}s;
+      --delay:-${(Math.random()*4).toFixed(1)}s;
+      --op:${(Math.random()*0.7+0.3).toFixed(2)};
+    `;
+    starsEl.appendChild(s);
+  }
+
+  // ---- Pétalas caindo ----
+  const petalsEl = document.getElementById('petals');
+  const petalSymbols = ['🌸','🌹','💮','🌷'];
+  for (let i = 0; i < 14; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.textContent = petalSymbols[Math.floor(Math.random()*petalSymbols.length)];
+    const dur = (Math.random()*7+6).toFixed(1);
+    p.style.cssText = `
+      left:${Math.random()*100}vw;
+      font-size:${(Math.random()*1+0.8).toFixed(1)}rem;
+      --fd:${dur}s;
+      --fd-delay:-${(Math.random()*parseFloat(dur)).toFixed(1)}s;
+    `;
+    petalsEl.appendChild(p);
+  }
+
+  // ---- Botão NÃO que foge ----
+  const btnNao = document.getElementById('btnNao');
+  const buttonsArea = document.getElementById('buttonsArea');
+  let naoCount = 0;
+
+  const funnyMessages = [
+    { emoji: '😅', text: 'Acho que seu dedo escorregou… o certo é clicar em SIM!' },
+    { emoji: '🤡', text: 'Não existe essa opção no meu coração. Tenta o SIM!' },
+    { emoji: '😂', text: 'Hm, o botão "Não" está com defeito. Só funciona o SIM!' },
+    { emoji: '🥺', text: 'Você ia me deixar com o coração partido assim?! Vai lá no SIM!' },
+    { emoji: '😤', text: 'Impossível clicar em Não. O universo não permite. Clica em SIM!' },
+    { emoji: '🙈', text: 'Esse botão foi um erro de programação. O único que funciona é o SIM!' },
+  ];
+
+  function fugeNao() {
+    const rect = buttonsArea.getBoundingClientRect();
+    const bw = 120, bh = 46;
+    let nx, ny;
+    const maxTries = 30;
+    for (let t = 0; t < maxTries; t++) {
+      nx = Math.random() * (rect.width - bw);
+      ny = Math.random() * (rect.height + 60) - 30;
+      break;
+    }
+    btnNao.style.left = nx + 'px';
+    btnNao.style.top = ny + 'px';
+  }
+
+  btnNao.addEventListener('click', () => {
+    const msg = funnyMessages[naoCount % funnyMessages.length];
+    document.getElementById('funnyEmoji').textContent = msg.emoji;
+    document.getElementById('funnyText').textContent = msg.text;
+    document.getElementById('funnyMsg').style.display = 'block';
+    document.getElementById('overlay').classList.add('active');
+    naoCount++;
+  });
+
+  function closeFunny() {
+    document.getElementById('funnyMsg').style.display = 'none';
+    document.getElementById('overlay').classList.remove('active');
+  }
+
+  // ---- Coração que sobe ao longo do tempo ----
+  function spawnHeart(x, y) {
+    const h = document.createElement('div');
+    h.className = 'heart-float';
+    const hearts = ['💖','💕','💗','💓','❤️','💝'];
+    h.textContent = hearts[Math.floor(Math.random()*hearts.length)];
+    h.style.left = (x || Math.random()*100) + (x ? 'px' : 'vw');
+    h.style.top = (y || 70) + (y ? 'px' : 'vh');
+    h.style.fontSize = (Math.random()*1.5+1.5) + 'rem';
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 2600);
+  }
+
+  // ---- Clicou SIM ----
+  function handleSim() {
+    // Lança coraçõezinhos por todo o canto
+    for (let i = 0; i < 18; i++) {
+      setTimeout(() => {
+        spawnHeart(Math.random()*90+5+'vw'.replace('vw',''), null);
+        const h = document.createElement('div');
+        h.className = 'heart-float';
+        const hearts = ['💖','💕','💗','💓','❤️','💝','🩷'];
+        h.textContent = hearts[Math.floor(Math.random()*hearts.length)];
+        h.style.left = (Math.random()*90+5) + 'vw';
+        h.style.top = (Math.random()*80+10) + 'vh';
+        h.style.fontSize = (Math.random()*2+1.5) + 'rem';
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 2600);
+      }, i * 100);
+    }
+
+    setTimeout(() => {
+      document.getElementById('simScreen').classList.add('active');
+      // Loop de corações na tela do sim
+      setInterval(() => {
+        spawnHeart(Math.random()*90+5+'vw'.replace('vw',''));
+        const h = document.createElement('div');
+        h.className = 'heart-float';
+        h.textContent = ['💖','💕','💗','💓','❤️','💝','🩷'][Math.floor(Math.random()*7)];
+        h.style.left = (Math.random()*90+5) + 'vw';
+        h.style.top = (Math.random()*80+10) + 'vh';
+        h.style.fontSize = (Math.random()*2+1.5) + 'rem';
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 2600);
+      }, 400);
+
+      // Abre Spotify automaticamente
+      setTimeout(() => {
+        window.open('https://open.spotify.com/track/2s0BKz3MuOGn7C5RV7gVUZ', '_blank');
+      }, 1200);
+    }, 900);
+  }
+
+  // Posição inicial do botão Não (relativa ao container)
+  window.addEventListener('load', () => {
+    const rect = buttonsArea.getBoundingClientRect();
+    btnNao.style.left = '52%';
+    btnNao.style.top = '0px';
+  });
+</script>
+</body>
+</html>
